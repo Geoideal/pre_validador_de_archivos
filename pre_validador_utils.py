@@ -1,3 +1,5 @@
+# Borrowed from Asistente-LADM-COL
+
 import os.path
 import re
 import xml.etree.cElementTree as et
@@ -19,14 +21,19 @@ def get_models_from_xtf(xtf_path):
     pattern = re.compile(r'(<HEADERSECTION[^>]*.*</HEADERSECTION>)')
 
     text_found = "<foo/>"
-    with open(xtf_path, 'r') as f:
-        lines = ""
-        for line in f:
-            lines += line
-            res = re.search(pattern, lines)
-            if res:
-                text_found = str(res.groups()[0])
-                break
+    try:
+        with open(xtf_path, 'r') as f:
+            lines = ""
+            for line in f:
+                lines += line
+                res = re.search(pattern, lines)
+                if res:
+                    text_found = str(res.groups()[0])
+                    break
+    except UnicodeDecodeError as e:
+        return False, "El archivo no tiene una codificación válida!"
+    except:
+        return False, "El archivo no pudo ser parseado!"
 
     if text_found:
         root = et.fromstring(text_found)
@@ -36,4 +43,4 @@ def get_models_from_xtf(xtf_path):
                 if "NAME" in sub_element.attrib:
                     model_names.append(sub_element.attrib["NAME"])
 
-    return sorted(model_names)
+    return True, sorted(model_names)
