@@ -1,4 +1,7 @@
 import os.path
+import shutil
+import tempfile
+import zipfile
 
 from pre_validador_utils import get_models_from_xtf
 
@@ -10,7 +13,7 @@ def pre_validar_archivo(path):
     if not os.path.exists(path):
         return False, "El archivo no existe!"
 
-    extension = os.path.splitext(path)[1].lower()
+    extension = __get_extension(path)
 
     if extension == '.zip':
         return pre_validar_zip(path)
@@ -22,12 +25,36 @@ def pre_validar_archivo(path):
         return False, "Extensión de archivo inválida ('{}').".format(extension)
         
 def pre_validar_zip(path):
-    # Permite descomprimir?
     # Tiene un solo archivo dentro?
     # El archivo tiene extensión válida?
+    # Permite descomprimir?
     # Preguntar a otro método...
-    pass
-
+    tmp_dir = tempfile.mkdtemp()
+    try:
+        with zipfile.ZipFile(path, "r") as z:
+            in_files = z.namelist()
+            print(in_files)
+            if len(in_files) > 1:
+                return False, "Hay más de un archivo dentro del ZIP ('{}')!".format(path)
+            elif len(in_files) == 0:
+                return False, "No hay archivos dentro del ZIP ('{}')!".format(path)
+            
+            extension = __get_extension(in_files[0])
+            if extension not in ['.xtf', '.gpkg']:
+                return False, "La extensión del archivo dentro del ZIP es inválida ('{}').".format(extension)
+            
+            z.extractall(tmp_dir)
+    except zipfile.BadZipFile as e:
+        return False, "Problema al descomprimir el archivo ZIP ('{}')! Detalle: {e}".format(path, e)
+        
+    res, msg = pre_validar_archivo(os.path.join(tmp_dir, in_files[0]))
+    try:
+        shutil.rmtree(tmp_dir)  # Remove the directory and its file
+    except:
+        print("WARNING: Carpeta no borrada! ('{}')".format(tmp_dir))
+    
+    return res, msg
+        
 def pre_validar_xtf(path):
     # XML?
     # Tags requeridos?
@@ -53,6 +80,8 @@ def pre_validar_gpkg(path):
     # Tiene tablas de metadatos de ili2db o coinciden los nombres de tablas?
     pass
 
+def __get_extension(path):
+    return os.path.splitext(path)[1].lower()
 
 
 if __name__ == '__main__':
@@ -72,15 +101,25 @@ if __name__ == '__main__':
     def assert_false(archivo):
         assert not do_assert(archivo)
 
+    # -------------------ZIP------------------------
+    print("INFO: Probando ZIPs...")
+    assert_false('data/zip/no_archivos.zip')
+    assert_false('data/zip/multiples_archivos.zip')
+    assert_false('data/zip/archivo_de_texto_txt.zip')
+    assert_false('data/zip/archivo_de_texto_xtf.zip')
+    assert_true('data/zip/datos_de_prueba_lev_cat_1_0.zip')
+
+    # -------------------XTF------------------------
+    print("\nINFO: Probando XTFs...")
     assert_false('')
-    assert_false('data/inexistente.xtf')
-    assert_false('data/archivo_de_texto.txt')
-    assert_false('data/archivo_imagen.xtf')
-    assert_false('data/archivo_xml.xtf')
-    assert_false('data/archivo_de_texto.xtf')
-    assert_false('data/ilivalidator_errors.xtf')
-    assert_false('data/lev_cat_1_2_valido_01.xtf')
-    assert_false('data/lev_cat_1_2_invalido_01.xtf')
-    assert_true('data/datos_de_prueba_lev_cat_1_0.xtf')
+    assert_false('data/xtf/inexistente.xtf')
+    assert_false('data/xtf/archivo_de_texto.txt')
+    assert_false('data/xtf/archivo_imagen.xtf')
+    assert_false('data/xtf/archivo_xml.xtf')
+    assert_false('data/xtf/archivo_de_texto.xtf')
+    assert_false('data/xtf/ilivalidator_errors.xtf')
+    assert_false('data/xtf/lev_cat_1_2_valido_01.xtf')
+    assert_false('data/xtf/lev_cat_1_2_invalido_01.xtf')
+    assert_true('data/xtf/datos_de_prueba_lev_cat_1_0.xtf')
    
-    print('Tests passed!')
+    print('\nAll tests passed!')
