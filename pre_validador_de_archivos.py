@@ -3,7 +3,10 @@ import shutil
 import tempfile
 import zipfile
 
-from pre_validador_utils import get_models_from_xtf
+import sqlite3
+
+from pre_validador_utils import (get_models_from_xtf,
+                                 get_gpkg_models)
 
 # At least one of these is required!
 LADMCOL_MODEL_NAMES = ['Modelo_Aplicacion_LADMCOL_Lev_Cat_V1_0']
@@ -73,12 +76,50 @@ def pre_validar_xtf(path):
     else:
         return res, models
     
-    return True, "Archivo pré-válido!"
+    return True, "Archivo pre-válido!"
 
 def pre_validar_gpkg(path):
     # Es un GPKG?
     # Tiene tablas de metadatos de ili2db o coinciden los nombres de tablas?
-    pass
+    conn = sqlite3.connect(path)
+    c = conn.cursor()
+    try:
+        # Source: https://github.com/OSGeo/gdal/blob/master/swig/python/gdal-utils/osgeo_utils/samples/validate_gpkg.py
+        # SQLITE 3?
+        c.execute('SELECT 1 FROM sqlite_master')
+        if c.fetchone() is None:
+            return False, "El archivo no es una base de datos SQLite3!"
+
+        # GPKG?
+        c.execute("SELECT 1 FROM sqlite_master WHERE "
+                  "name = 'gpkg_spatial_ref_sys'")
+        if c.fetchone() is None:
+            return False, "La BD GeoPackage no tiene tabla de sistemas de referencia!"
+
+        # INTERLIS?
+        c.execute("SELECT * FROM sqlite_master WHERE "
+                  "name = 'T_ILI2DB_MODEL'")
+        if c.fetchone() is None:
+            return False, "La BD GeoPackage no tiene estructura INTERLIS!"
+
+        # Modelo?
+        models = get_gpkg_models(c)
+        # print(models)
+        count = 0
+        for model in LADMCOL_MODEL_NAMES:
+            if model not in models:
+                count += 1
+
+        if count == len(LADMCOL_MODEL_NAMES):
+            return False, "La BD GeoPackage no incluye el modelo base LADM-COL!"
+        #print(c.fetchone())
+    except:
+        return False, "Problema accediendo a la GPKG."
+    finally:
+        c.close()
+        conn.close()
+
+    return True, "Archivo pre-válido!"
 
 def __get_extension(path):
     return os.path.splitext(path)[1].lower()
@@ -121,5 +162,14 @@ if __name__ == '__main__':
     assert_false('data/xtf/lev_cat_1_2_valido_01.xtf')
     assert_false('data/xtf/lev_cat_1_2_invalido_01.xtf')
     assert_true('data/xtf/datos_de_prueba_lev_cat_1_0.xtf')
+
+    # -------------------GPKG------------------------
+    print("\nINFO: Probando GPKGs...")
+    assert_false('data/gpkg/archivo_de_texto.gpkg')
+    assert_false('data/gpkg/sqlite.gpkg')
+    assert_false('data/gpkg/no_interlis.gpkg')
+    assert_false('data/gpkg/interlis_no_modelo.gpkg')
+    assert_true('data/gpkg/valida_1_0.gpkg')
+    assert_false('data/gpkg/valida_1_2.gpkg')
    
     print('\nAll tests passed!')
