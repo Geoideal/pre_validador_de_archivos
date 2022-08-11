@@ -48,7 +48,7 @@ def pre_validar_zip(path):
             
             z.extractall(tmp_dir)
     except zipfile.BadZipFile as e:
-        return False, "Problema al descomprimir el archivo ZIP ('{}')! Detalle: {e}".format(path, e)
+        return False, "Problema al descomprimir el archivo ZIP ('{}')! Detalle: {}".format(path, e)
         
     res, msg = pre_validar_archivo(os.path.join(tmp_dir, in_files[0]))
     try:
