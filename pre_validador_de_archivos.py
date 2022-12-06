@@ -9,7 +9,7 @@ from pre_validador_utils import (get_models_from_xtf,
                                  get_gpkg_models)
 
 # At least one of these is required!
-LADMCOL_MODEL_NAMES = ['Modelo_Aplicacion_LADMCOL_Lev_Cat_V1_0']
+LADMCOL_MODEL_NAMES = ['Modelo_Aplicacion_LADMCOL_Lev_Cat_V1_2', 'Modelo_Aplicacion_LADMCOL_RIC_V0_1']
 
 
 def pre_validar_archivo(path):
@@ -72,7 +72,7 @@ def pre_validar_xtf(path):
                 count += 1
 
         if count == len(LADMCOL_MODEL_NAMES):
-            return False, "El archivo no incluye el modelo base LADM-COL!"
+            return False, "¡El archivo XTF no incluye el modelo LADM-COL requerido ('{}')!".format("', '".join(LADMCOL_MODEL_NAMES))
     else:
         return res, models
     
@@ -111,7 +111,7 @@ def pre_validar_gpkg(path):
                 count += 1
 
         if count == len(LADMCOL_MODEL_NAMES):
-            return False, "La BD GeoPackage no incluye el modelo base LADM-COL!"
+            return False, "¡La BD GeoPackage no incluye el modelo LADM-COL requerido ('{}')!".format("', '".join(LADMCOL_MODEL_NAMES))
         #print(c.fetchone())
     except:
         return False, "Problema accediendo a la GPKG."
