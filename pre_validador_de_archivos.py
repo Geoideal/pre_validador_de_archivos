@@ -120,7 +120,7 @@ def pre_validar_gpkg(path, model_to_validate=''):
             return False, "¡La BD GeoPackage no incluye ninguno de los modelos LADM-COL requeridos ('{}')!".format("', '".join(LADMCOL_MODEL_NAMES))
 
         if model_to_validate and not model_to_validate in models:
-            return False, "¡El archivo XTF no incluye el modelo LADM-COL a validar ('{}')!".format(model_to_validate)
+            return False, "¡La BD GeoPackage no incluye el modelo LADM-COL a validar ('{}')!".format(model_to_validate)
 
         #print(c.fetchone())
     except:
