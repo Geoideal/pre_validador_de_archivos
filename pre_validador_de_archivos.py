@@ -148,7 +148,8 @@ if __name__ == '__main__':
     assert_false('data/zip/multiples_archivos.zip')
     assert_false('data/zip/archivo_de_texto_txt.zip')
     assert_false('data/zip/archivo_de_texto_xtf.zip')
-    assert_true('data/zip/datos_de_prueba_lev_cat_1_0.zip')
+    assert_false('data/zip/datos_de_prueba_lev_cat_1_0.zip')
+    assert_true('data/zip/lev_cat_1_2_valido_01.zip')
 
     # -------------------XTF------------------------
     print("\nINFO: Probando XTFs...")
@@ -159,9 +160,9 @@ if __name__ == '__main__':
     assert_false('data/xtf/archivo_xml.xtf')
     assert_false('data/xtf/archivo_de_texto.xtf')
     assert_false('data/xtf/ilivalidator_errors.xtf')
-    assert_false('data/xtf/lev_cat_1_2_valido_01.xtf')
-    assert_false('data/xtf/lev_cat_1_2_invalido_01.xtf')
-    assert_true('data/xtf/datos_de_prueba_lev_cat_1_0.xtf')
+    assert_true('data/xtf/lev_cat_1_2_valido_01.xtf')
+    assert_true('data/xtf/lev_cat_1_2_invalido_01.xtf')
+    assert_false('data/xtf/datos_de_prueba_lev_cat_1_0.xtf')
 
     # -------------------GPKG------------------------
     print("\nINFO: Probando GPKGs...")
@@ -169,7 +170,7 @@ if __name__ == '__main__':
     assert_false('data/gpkg/sqlite.gpkg')
     assert_false('data/gpkg/no_interlis.gpkg')
     assert_false('data/gpkg/interlis_no_modelo.gpkg')
-    assert_true('data/gpkg/valida_1_0.gpkg')
-    assert_false('data/gpkg/valida_1_2.gpkg')
+    assert_false('data/gpkg/valida_1_0.gpkg')
+    assert_true('data/gpkg/valida_1_2.gpkg')
    
     print('\nAll tests passed!')
