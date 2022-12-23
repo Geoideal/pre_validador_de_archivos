@@ -8,6 +8,9 @@ import sqlite3
 from pre_validador_utils import (get_models_from_xtf,
                                  get_gpkg_models)
 
+MODE_WEB = True
+WILD_CARD = '###'  # To be replaced with a line break (depending on the context: web '<br \>' or desktop)
+
 LEV_CAT_1_2 = 'Modelo_Aplicacion_LADMCOL_Lev_Cat_V1_2'
 RIC_0_1 = 'Modelo_Aplicacion_LADMCOL_RIC_V0_1'
 
@@ -41,9 +44,9 @@ def pre_validar_zip(path, model_to_validate=''):
             in_files = z.namelist()
             print(in_files)
             if len(in_files) > 1:
-                return False, "Hay más de un archivo dentro del ZIP ('{}')!".format(path)
+                return False, "¡Hay más de un archivo dentro del ZIP ('{}')!".format(formatear_path(path))
             elif len(in_files) == 0:
-                return False, "No hay archivos dentro del ZIP ('{}')!".format(path)
+                return False, "¡No hay archivos dentro del ZIP ('{}')!".format(formatear_path(path))
             
             extension = __get_extension(in_files[0])
             if extension not in ['.xtf', '.gpkg']:
@@ -51,7 +54,7 @@ def pre_validar_zip(path, model_to_validate=''):
             
             z.extractall(tmp_dir)
     except zipfile.BadZipFile as e:
-        return False, "Problema al descomprimir el archivo ZIP ('{}')! Detalle: {}".format(path, e)
+        return False, msg("Problema al descomprimir el archivo ZIP ('{}')!###Detalle: {}".format(formatear_path(path), e))
         
     res, msg = pre_validar_archivo(os.path.join(tmp_dir, in_files[0]), model_to_validate)
     try:
@@ -75,10 +78,10 @@ def pre_validar_xtf(path, model_to_validate=''):
                 count += 1
 
         if count == len(LADMCOL_MODEL_NAMES):
-            return False, "¡El archivo XTF no incluye ninguno de los modelos LADM-COL requeridos ('{}')!".format("', '".join(LADMCOL_MODEL_NAMES))
+            return False, msg("¡El archivo XTF no incluye ninguno de los modelos LADM-COL soportados###('{}')!".format("', '".join(LADMCOL_MODEL_NAMES)))
         
         if model_to_validate and not model_to_validate in models:
-            return False, "¡El archivo XTF no incluye el modelo LADM-COL a validar ('{}')!".format(model_to_validate)
+            return False, msg("¡El archivo XTF no incluye el modelo LADM-COL a validar###('{}')!".format(model_to_validate))
     else:
         return res, models
     
@@ -117,10 +120,10 @@ def pre_validar_gpkg(path, model_to_validate=''):
                 count += 1
 
         if count == len(LADMCOL_MODEL_NAMES):
-            return False, "¡La BD GeoPackage no incluye ninguno de los modelos LADM-COL requeridos ('{}')!".format("', '".join(LADMCOL_MODEL_NAMES))
+            return False, msg("¡La BD GeoPackage no incluye ninguno de los modelos LADM-COL soportados###('{}')!".format("', '".join(LADMCOL_MODEL_NAMES)))
 
         if model_to_validate and not model_to_validate in models:
-            return False, "¡La BD GeoPackage no incluye el modelo LADM-COL a validar ('{}')!".format(model_to_validate)
+            return False, msg("¡La BD GeoPackage no incluye el modelo LADM-COL a validar###('{}')!".format(model_to_validate))
 
         #print(c.fetchone())
     except:
@@ -130,6 +133,14 @@ def pre_validar_gpkg(path, model_to_validate=''):
         conn.close()
 
     return True, "Archivo pre-válido!"
+
+
+def formatear_path(path):
+    return os.path.basename(path) if MODE_WEB else path
+
+def msg(text):
+    return text.replace(WILD_CARD, '<br \>' if MODE_WEB else ' ')
+
 
 def __get_extension(path):
     return os.path.splitext(path)[1].lower()
