@@ -54,7 +54,7 @@ def pre_validar_zip(path, model_to_validate=''):
             
             z.extractall(tmp_dir)
     except zipfile.BadZipFile as e:
-        return False, msg("Problema al descomprimir el archivo ZIP ('{}')!###Detalle: {}".format(formatear_path(path), e))
+        return False, prepare_msg("Problema al descomprimir el archivo ZIP ('{}')!###Detalle: {}".format(formatear_path(path), e))
         
     res, msg = pre_validar_archivo(os.path.join(tmp_dir, in_files[0]), model_to_validate)
     try:
@@ -78,10 +78,10 @@ def pre_validar_xtf(path, model_to_validate=''):
                 count += 1
 
         if count == len(LADMCOL_MODEL_NAMES):
-            return False, msg("¡El archivo XTF no incluye ninguno de los modelos LADM-COL soportados###('{}')!".format("', '".join(LADMCOL_MODEL_NAMES)))
+            return False, prepare_msg("¡El archivo XTF no incluye ninguno de los modelos LADM-COL soportados###('{}')!".format("', '".join(LADMCOL_MODEL_NAMES)))
         
         if model_to_validate and not model_to_validate in models:
-            return False, msg("¡El archivo XTF no incluye el modelo LADM-COL a validar###('{}')!".format(model_to_validate))
+            return False, prepare_msg("¡El archivo XTF no incluye el modelo LADM-COL a validar###('{}')!".format(model_to_validate))
     else:
         return res, models
     
@@ -120,10 +120,10 @@ def pre_validar_gpkg(path, model_to_validate=''):
                 count += 1
 
         if count == len(LADMCOL_MODEL_NAMES):
-            return False, msg("¡La BD GeoPackage no incluye ninguno de los modelos LADM-COL soportados###('{}')!".format("', '".join(LADMCOL_MODEL_NAMES)))
+            return False, prepare_msg("¡La BD GeoPackage no incluye ninguno de los modelos LADM-COL soportados###('{}')!".format("', '".join(LADMCOL_MODEL_NAMES)))
 
         if model_to_validate and not model_to_validate in models:
-            return False, msg("¡La BD GeoPackage no incluye el modelo LADM-COL a validar###('{}')!".format(model_to_validate))
+            return False, prepare_msg("¡La BD GeoPackage no incluye el modelo LADM-COL a validar###('{}')!".format(model_to_validate))
 
         #print(c.fetchone())
     except:
@@ -138,7 +138,7 @@ def pre_validar_gpkg(path, model_to_validate=''):
 def formatear_path(path):
     return os.path.basename(path) if MODE_WEB else path
 
-def msg(text):
+def prepare_msg(text):
     return text.replace(WILD_CARD, '<br \>' if MODE_WEB else ' ')
 
 
