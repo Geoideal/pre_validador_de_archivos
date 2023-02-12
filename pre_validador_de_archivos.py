@@ -11,11 +11,12 @@ from pre_validador_utils import (get_models_from_xtf,
 MODE_WEB = True
 WILD_CARD = '###'  # To be replaced with a line break (depending on the context: web '<br \>' or desktop)
 
+LEV_CAT_2_0 = 'Modelo_Aplicacion_LADMCOL_Lev_Cat_V2_0'
 LEV_CAT_1_2 = 'Modelo_Aplicacion_LADMCOL_Lev_Cat_V1_2'
 RIC_0_1 = 'Modelo_Aplicacion_LADMCOL_RIC_V0_1'
 
 # At least one of these is required!
-LADMCOL_MODEL_NAMES = [LEV_CAT_1_2, RIC_0_1]
+LADMCOL_MODEL_NAMES = [LEV_CAT_2_0, LEV_CAT_1_2, RIC_0_1]
 
 
 def pre_validar_archivo(path, model_to_validate=''):
@@ -32,7 +33,8 @@ def pre_validar_archivo(path, model_to_validate=''):
         return pre_validar_gpkg(path, model_to_validate)
     else:
         return False, "Extensión de archivo inválida ('{}').".format(extension)
-        
+
+
 def pre_validar_zip(path, model_to_validate=''):
     # Tiene un solo archivo dentro?
     # El archivo tiene extensión válida?
@@ -63,7 +65,8 @@ def pre_validar_zip(path, model_to_validate=''):
         print("WARNING: Carpeta no borrada! ('{}')".format(tmp_dir))
     
     return res, msg
-        
+
+
 def pre_validar_xtf(path, model_to_validate=''):
     # XML?
     # Tags requeridos?
@@ -86,6 +89,7 @@ def pre_validar_xtf(path, model_to_validate=''):
         return res, models
     
     return True, "Archivo pre-válido!"
+
 
 def pre_validar_gpkg(path, model_to_validate=''):
     # Es un GPKG?
@@ -138,6 +142,7 @@ def pre_validar_gpkg(path, model_to_validate=''):
 def formatear_path(path):
     return os.path.basename(path) if MODE_WEB else path
 
+
 def prepare_msg(text):
     return text.replace(WILD_CARD, '<br \>' if MODE_WEB else ' ')
 
@@ -171,8 +176,12 @@ if __name__ == '__main__':
     assert_false('data/zip/archivo_de_texto_xtf.zip')
     assert_false('data/zip/datos_de_prueba_lev_cat_1_0.zip')
     assert_true('data/zip/lev_cat_1_2_valido_01.zip')
+    assert_true('data/zip/lev_cat_2_0_valido_01.zip')
     assert_true('data/zip/lev_cat_1_2_valido_01.zip', LEV_CAT_1_2)
+    assert_false('data/zip/lev_cat_1_2_valido_01.zip', LEV_CAT_2_0)
     assert_false('data/zip/lev_cat_1_2_valido_01.zip', RIC_0_1)
+    assert_true('data/zip/lev_cat_2_0_valido_01.zip', LEV_CAT_2_0)
+    assert_false('data/zip/lev_cat_2_0_valido_01.zip', LEV_CAT_1_2)
 
     # -------------------XTF------------------------
     print("\nINFO: Probando XTFs...")
@@ -184,10 +193,13 @@ if __name__ == '__main__':
     assert_false('data/xtf/archivo_de_texto.xtf')
     assert_false('data/xtf/ilivalidator_errors.xtf')
     assert_true('data/xtf/lev_cat_1_2_valido_01.xtf')
+    assert_true('data/xtf/lev_cat_2_0_valido_01.xtf')
     assert_false('data/xtf/datos_de_prueba_lev_cat_1_0.xtf')
     assert_true('data/xtf/lev_cat_1_2_invalido_01.xtf')
     assert_true('data/xtf/lev_cat_1_2_invalido_01.xtf', LEV_CAT_1_2)
     assert_false('data/xtf/lev_cat_1_2_invalido_01.xtf', RIC_0_1)
+    assert_true('data/xtf/lev_cat_2_0_valido_01.xtf', LEV_CAT_2_0)
+    assert_false('data/xtf/lev_cat_2_0_valido_01.xtf', LEV_CAT_1_2)
 
     # -------------------GPKG------------------------
     print("\nINFO: Probando GPKGs...")
@@ -197,7 +209,11 @@ if __name__ == '__main__':
     assert_false('data/gpkg/interlis_no_modelo.gpkg')
     assert_false('data/gpkg/valida_1_0.gpkg')
     assert_true('data/gpkg/valida_1_2.gpkg')
+    assert_false('data/gpkg/valida_1_2.gpkg', LEV_CAT_2_0)
     assert_true('data/gpkg/valida_1_2.gpkg', LEV_CAT_1_2)
     assert_false('data/gpkg/valida_1_2.gpkg', RIC_0_1)
+    assert_true('data/gpkg/valida_2_0.gpkg', LEV_CAT_2_0)
+    assert_false('data/gpkg/valida_2_0.gpkg', LEV_CAT_1_2)
+    assert_false('data/gpkg/valida_2_0.gpkg', RIC_0_1)
    
     print('\nAll tests passed!')
