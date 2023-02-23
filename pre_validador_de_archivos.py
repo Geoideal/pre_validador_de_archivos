@@ -13,10 +13,11 @@ WILD_CARD = '###'  # To be replaced with a line break (depending on the context:
 
 LEV_CAT_2_0 = 'Modelo_Aplicacion_LADMCOL_Lev_Cat_V2_0'
 LEV_CAT_1_2 = 'Modelo_Aplicacion_LADMCOL_Lev_Cat_V1_2'
+LEV_CAT_1_0 = 'Modelo_Aplicacion_LADMCOL_Lev_Cat_V1_0'
 RIC_0_1 = 'Modelo_Aplicacion_LADMCOL_RIC_V0_1'
 
 # At least one of these is required!
-LADMCOL_MODEL_NAMES = [LEV_CAT_2_0, LEV_CAT_1_2, RIC_0_1]
+LADMCOL_MODEL_NAMES = [LEV_CAT_2_0, LEV_CAT_1_2, LEV_CAT_1_0, RIC_0_1]
 
 
 def pre_validar_archivo(path, model_to_validate=''):
@@ -174,14 +175,19 @@ if __name__ == '__main__':
     assert_false('data/zip/multiples_archivos.zip')
     assert_false('data/zip/archivo_de_texto_txt.zip')
     assert_false('data/zip/archivo_de_texto_xtf.zip')
-    assert_false('data/zip/datos_de_prueba_lev_cat_1_0.zip')
+    assert_true('data/zip/datos_de_prueba_lev_cat_1_0.zip')
+    assert_true('data/zip/datos_de_prueba_lev_cat_1_0.zip', LEV_CAT_1_0)
+    assert_false('data/zip/datos_de_prueba_lev_cat_1_0.zip', LEV_CAT_1_2)
+    assert_false('data/zip/datos_de_prueba_lev_cat_1_0.zip', LEV_CAT_2_0)
     assert_true('data/zip/lev_cat_1_2_valido_01.zip')
     assert_true('data/zip/lev_cat_2_0_valido_01.zip')
     assert_true('data/zip/lev_cat_1_2_valido_01.zip', LEV_CAT_1_2)
+    assert_false('data/zip/lev_cat_1_2_valido_01.zip', LEV_CAT_1_0)
     assert_false('data/zip/lev_cat_1_2_valido_01.zip', LEV_CAT_2_0)
     assert_false('data/zip/lev_cat_1_2_valido_01.zip', RIC_0_1)
     assert_true('data/zip/lev_cat_2_0_valido_01.zip', LEV_CAT_2_0)
     assert_false('data/zip/lev_cat_2_0_valido_01.zip', LEV_CAT_1_2)
+    assert_false('data/zip/lev_cat_2_0_valido_01.zip', LEV_CAT_1_0)
 
     # -------------------XTF------------------------
     print("\nINFO: Probando XTFs...")
@@ -194,12 +200,17 @@ if __name__ == '__main__':
     assert_false('data/xtf/ilivalidator_errors.xtf')
     assert_true('data/xtf/lev_cat_1_2_valido_01.xtf')
     assert_true('data/xtf/lev_cat_2_0_valido_01.xtf')
-    assert_false('data/xtf/datos_de_prueba_lev_cat_1_0.xtf')
+    assert_true('data/xtf/datos_de_prueba_lev_cat_1_0.xtf')
+    assert_true('data/xtf/datos_de_prueba_lev_cat_1_0.xtf', LEV_CAT_1_0)
+    assert_false('data/xtf/datos_de_prueba_lev_cat_1_0.xtf', LEV_CAT_1_2)
+    assert_false('data/xtf/datos_de_prueba_lev_cat_1_0.xtf', LEV_CAT_2_0)
     assert_true('data/xtf/lev_cat_1_2_invalido_01.xtf')
     assert_true('data/xtf/lev_cat_1_2_invalido_01.xtf', LEV_CAT_1_2)
+    assert_false('data/xtf/lev_cat_1_2_invalido_01.xtf', LEV_CAT_1_0)
     assert_false('data/xtf/lev_cat_1_2_invalido_01.xtf', RIC_0_1)
     assert_true('data/xtf/lev_cat_2_0_valido_01.xtf', LEV_CAT_2_0)
     assert_false('data/xtf/lev_cat_2_0_valido_01.xtf', LEV_CAT_1_2)
+    assert_false('data/xtf/lev_cat_2_0_valido_01.xtf', LEV_CAT_1_0)
 
     # -------------------GPKG------------------------
     print("\nINFO: Probando GPKGs...")
@@ -207,12 +218,17 @@ if __name__ == '__main__':
     assert_false('data/gpkg/sqlite.gpkg')
     assert_false('data/gpkg/no_interlis.gpkg')
     assert_false('data/gpkg/interlis_no_modelo.gpkg')
-    assert_false('data/gpkg/valida_1_0.gpkg')
+    assert_true('data/gpkg/valida_1_0.gpkg')
+    assert_true('data/gpkg/valida_1_0.gpkg', LEV_CAT_1_0)
+    assert_false('data/gpkg/valida_1_0.gpkg', LEV_CAT_1_2)
+    assert_false('data/gpkg/valida_1_0.gpkg', LEV_CAT_2_0)
     assert_true('data/gpkg/valida_1_2.gpkg')
     assert_false('data/gpkg/valida_1_2.gpkg', LEV_CAT_2_0)
+    assert_false('data/gpkg/valida_1_2.gpkg', LEV_CAT_1_0)
     assert_true('data/gpkg/valida_1_2.gpkg', LEV_CAT_1_2)
     assert_false('data/gpkg/valida_1_2.gpkg', RIC_0_1)
     assert_true('data/gpkg/valida_2_0.gpkg', LEV_CAT_2_0)
+    assert_false('data/gpkg/valida_2_0.gpkg', LEV_CAT_1_0)
     assert_false('data/gpkg/valida_2_0.gpkg', LEV_CAT_1_2)
     assert_false('data/gpkg/valida_2_0.gpkg', RIC_0_1)
    
