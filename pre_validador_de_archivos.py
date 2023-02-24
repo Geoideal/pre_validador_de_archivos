@@ -24,6 +24,11 @@ def pre_validar_archivo(path, model_to_validate=''):
     if not os.path.exists(path):
         return False, "El archivo no existe!"
 
+    if model_to_validate == 'Modelo_Aplicacion_LADMCOL_Lev_Cat_V1_2_Fraction':
+        # Because, even in the case of fractions, the XTF/GPKG files
+        # will tell us they contain data from LEV_CAT_1_2
+        model_to_validate = LEV_CAT_1_2
+
     extension = __get_extension(path)
 
     if extension == '.zip':
